@@ -291,6 +291,19 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation:none !important; transition:none !important; }
   }
+  /* ETICHETTA "PIÙ ORDINATO" IN ALTO A DESTRA */
+  .dish { position:relative; }
+  .dish.top { padding-top:26px; }
+  .dish-badge { position:absolute; top:0; right:0; display:inline-flex; align-items:center; gap:4px; background:linear-gradient(135deg,#f5b400,#e8891c); color:#fff; font-size:.68rem; font-weight:700; letter-spacing:.2px; padding:3px 9px; border-radius:0 12px 0 10px; box-shadow:0 2px 6px rgba(232,137,28,.35); }
+  .dish-badge.season { right:auto; left:0; background:linear-gradient(135deg,#4caf6a,#2e7d4a); border-radius:10px 0 12px 0; box-shadow:0 2px 6px rgba(46,125,74,.35); }
+  .dish.season-on { padding-top:26px; }
+  /* PULSANTE CONDIVIDI FLUTTUANTE (in basso a destra, sopra la barra) */
+  .share-fab { position:fixed; right:22px; bottom:calc(100px + env(safe-area-inset-bottom)); width:56px; height:56px; border-radius:50%; border:none; background:#fff; color:#c2431f; box-shadow:0 6px 18px rgba(0,0,0,.28); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:4; animation:fabWiggle 4s ease-in-out infinite; }
+  .share-fab::before { content:""; position:absolute; inset:0; border-radius:50%; border:2px solid #e4572e; animation:fabRing 2s ease-out infinite; pointer-events:none; }
+  .share-fab svg { width:26px; height:26px; }
+  .share-fab:active { transform:scale(.92); }
+  @keyframes fabRing { 0% { transform:scale(1); opacity:.9; } 100% { transform:scale(1.6); opacity:0; } }
+  @keyframes fabWiggle { 0%,80%,100% { transform:rotate(0); } 84% { transform:rotate(-12deg); } 88% { transform:rotate(12deg); } 92% { transform:rotate(-6deg); } 96% { transform:rotate(3deg); } }
   /* TELEFONI STRETTI: testo a tutta larghezza, pulsanti - + sotto a destra */
   @media (max-width:600px) {
     .dish { flex-wrap:wrap; gap:12px; }
@@ -417,7 +430,7 @@
       <label class="field-label" data-i18n="nameL">Nome e cognome *</label>
       <input type="text" id="name" maxlength="80" data-i18n-ph="namePh" placeholder="Es. Mario Rossi" autocomplete="name" oninput="refresh()">
       <label class="field-label" data-i18n="phoneL">Telefono *</label>
-      <div class="phone-row"><span class="phone-prefix">+39</span><input type="tel" id="phone" placeholder="348 3628364" autocomplete="tel" inputmode="numeric" maxlength="10" oninput="this.value = this.value.replace(/\D/g, ''); refresh()"></div>
+      <div class="phone-row"><span class="phone-prefix">+39</span><input type="tel" id="phone" placeholder="348 3628364" autocomplete="tel" inputmode="numeric" maxlength="12" oninput="this.value = fmtPhone(this.value); refresh()"></div>
       <label class="field-label" data-i18n="notesL">Note aggiuntive (facoltative)</label>
       <textarea id="note" maxlength="300" rows="3" data-i18n-ph="notesPh" placeholder="Es. allergie, richieste particolari" oninput="refresh()"></textarea>
     </div>
@@ -502,6 +515,9 @@
   </div>
 </div>
 
+<!-- CONDIVIDI MENU -->
+<button class="share-fab" onclick="shareMenu()" aria-label="Condividi il menu" title="Condividi il menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></button>
+
 <!-- BARRA FISSA -->
 <div class="bottombar">
   <div class="sum">
@@ -544,7 +560,7 @@ const T = {
     payTitle:"Pagamento", cash:"Contanti", card:"Bancomat / POS", cashS:"Al ritiro o alla consegna",
     previewTitle:"Anteprima messaggio", previewNote:"Il messaggio verrà inviato al ristorante in italiano.",
     previewEmpty:"Aggiungi dei piatti per vedere il messaggio.",
-    waitNotice:"This is a request, not a confirmed order. The restaurant will reply on WhatsApp with the time: wait for confirmation before coming.", askTitle:"Ti è piaciuto il servizio?", askText:"Lascia una recensione su TripAdvisor: ci aiuta tantissimo!", askNo:"Non ora", openWa:"Apri WhatsApp", doneTitle:"Richiesta inviata", codeLabel:"Numero richiesta", stepSent:"Richiesta inviata", stepWait:"In attesa di conferma", stepOk:"Confermato", doneText:"Grazie, la tua richiesta è stata inviata.", waitText:"Il ristorante verificherà la richiesta e ti confermerà l'orario su WhatsApp. Attendi la conferma prima di venire.", responseTime:"Di solito rispondiamo entro 15 minuti.", late:"Non hai ricevuto risposta? Chiama il ristorante.", copy:"Copia riepilogo", copied:"Copiato ✓", close:"Chiudi", barSend:"Invia richiesta", privacy:"I dati vengono inviati solo tramite WhatsApp al ristorante e non vengono salvati dal sito.", specialL:"Hai in mente un piatto che non c'è nel menù?", specialPh:"Scrivilo qui", specialHint:"Il ristorante ti risponderà su WhatsApp con disponibilità e prezzo. Il totale qui non include questa richiesta.", excludedNote:"esclusa richiesta speciale",
+    waitNotice:"This is a request, not a confirmed order. The restaurant will reply on WhatsApp with the time: wait for confirmation before coming.", shareBtn:"Condividi il menu", shareText:"Guarda il menu di Pronto Chef e ordina per asporto!", askTitle:"Ti è piaciuto il servizio?", askText:"Lascia una recensione su TripAdvisor: ci aiuta tantissimo!", askNo:"Non ora", openWa:"Apri WhatsApp", doneTitle:"Richiesta inviata", codeLabel:"Numero richiesta", stepSent:"Richiesta inviata", stepWait:"In attesa di conferma", stepOk:"Confermato", doneText:"Grazie, la tua richiesta è stata inviata.", waitText:"Il ristorante verificherà la richiesta e ti confermerà l'orario su WhatsApp. Attendi la conferma prima di venire.", responseTime:"Di solito rispondiamo entro 15 minuti.", late:"Non hai ricevuto risposta? Chiama il ristorante.", copy:"Copia riepilogo", copied:"Copiato ✓", close:"Chiudi", barSend:"Invia richiesta", privacy:"I dati vengono inviati solo tramite WhatsApp al ristorante e non vengono salvati dal sito.", specialL:"Hai in mente un piatto che non c'è nel menù?", specialPh:"Scrivilo qui", specialHint:"Il ristorante ti risponderà su WhatsApp con disponibilità e prezzo. Il totale qui non include questa richiesta.", excludedNote:"esclusa richiesta speciale",
     barEmpty:"Carrello vuoto", barItems:(n)=> n===1 ? "1 articolo" : `${n} articoli`,
     missingPrefix:"Per inviare la richiesta mancano: ", addDishFirst:"Aggiungi almeno un piatto per inviare la richiesta.",
     completeFields:"Completa tutti i campi obbligatori (*).",
@@ -575,7 +591,7 @@ const T = {
     payTitle:"Payment", cash:"Cash", card:"Card / POS", cashS:"At pickup or delivery",
     previewTitle:"Message preview", previewNote:"The message will be sent to the restaurant in Italian.",
     previewEmpty:"Add some dishes to see the message.",
-    waitNotice:"The restaurant will confirm the time on WhatsApp before preparing your order.", askTitle:"Did you enjoy it?", askText:"Leave a review on TripAdvisor: it really helps us!", askNo:"Not now", openWa:"Open WhatsApp", doneTitle:"Request sent", codeLabel:"Request number", stepSent:"Request sent", stepWait:"Waiting for confirmation", stepOk:"Confirmed", doneText:"Thank you, your request has been sent.", waitText:"The restaurant will check your request and confirm the time on WhatsApp. Please wait for confirmation before coming.", responseTime:"We usually reply within 15 minutes.", late:"No reply yet? Call the restaurant.", copy:"Copy summary", copied:"Copied ✓", close:"Close", barSend:"Send request", privacy:"Your details are sent only via WhatsApp to the restaurant and are not stored by this site.", specialL:"Have a dish in mind that is not on the menu?", specialPh:"Write it here", specialHint:"The restaurant will reply on WhatsApp with availability and price. The total here does not include this request.", excludedNote:"special request excluded",
+    waitNotice:"The restaurant will confirm the time on WhatsApp before preparing your order.", shareBtn:"Share the menu", shareText:"Check out the Pronto Chef menu and order takeaway!", askTitle:"Did you enjoy it?", askText:"Leave a review on TripAdvisor: it really helps us!", askNo:"Not now", openWa:"Open WhatsApp", doneTitle:"Request sent", codeLabel:"Request number", stepSent:"Request sent", stepWait:"Waiting for confirmation", stepOk:"Confirmed", doneText:"Thank you, your request has been sent.", waitText:"The restaurant will check your request and confirm the time on WhatsApp. Please wait for confirmation before coming.", responseTime:"We usually reply within 15 minutes.", late:"No reply yet? Call the restaurant.", copy:"Copy summary", copied:"Copied ✓", close:"Close", barSend:"Send request", privacy:"Your details are sent only via WhatsApp to the restaurant and are not stored by this site.", specialL:"Have a dish in mind that is not on the menu?", specialPh:"Write it here", specialHint:"The restaurant will reply on WhatsApp with availability and price. The total here does not include this request.", excludedNote:"special request excluded",
     barEmpty:"Cart empty", barItems:(n)=> n===1 ? "1 item" : `${n} items`,
     missingPrefix:"To send the request, please complete: ", addDishFirst:"Add at least one dish to send the request.",
     completeFields:"Please complete all required fields (*).",
@@ -587,15 +603,15 @@ const T = {
 
 /* ===== MENU (nomi in italiano e inglese) ===== */
 const DISHES = {
-  mare: { it:"Insalata di Mare con Seppie Gamberi e Polpo", en:"Seafood salad with cuttlefish, prawns and octopus", p:10, icon:"pesce" },
+  mare: { it:"Insalata di Mare con Seppie Gamberi e Polpo", en:"Seafood salad with cuttlefish, prawns and octopus", p:10, icon:"pesce", top:true },
   tonno: { it:"Tartare di Tonno e Cipolla di Tropea", en:"Tuna tartare and Tropea onion", p:10, icon:"pesce" },
   bombette: { it:"Bombette di Capocollo scottate con crema di Patate e fonduta di Cacio", en:"Seared capocollo bombette with potato cream and cheese fondue", p:8, icon:"cotoletta" },
   millefoglie: { it:"Millefoglie di Melanzane Pomodoro e Provola affumicata", en:"Eggplant, tomato and smoked provola millefeuille", p:7, icon:"lasagne" },
   troccoli: { it:"Troccoli alla polpa di Cicale e Vongole", en:"Troccoli with sea cicadas and clams", p:10, icon:"carbonara" },
   pastamista: { it:"Pasta Mista con Patate Provola e Salsiccia", en:"Mixed pasta with potatoes, provola and sausage", p:9, icon:"carbonara" },
-  ravioli: { it:"Ravioli Speck e Patate con crema di Zucca e fonduta di Cacio", en:"Speck and potato ravioli with pumpkin cream and cheese fondue", p:10, icon:"lasagne" },
+  ravioli: { it:"Ravioli Speck e Patate con crema di Zucca e fonduta di Cacio", en:"Speck and potato ravioli with pumpkin cream and cheese fondue", p:10, icon:"lasagne", top:true },
   fusilli: { it:"Fusilli agli Straccetti di Manzo Pomodorino e Rosmarino", en:"Fusilli with beef strips, cherry tomatoes and rosemary", p:9, icon:"carbonara" },
-  orata: { it:"Ventaglio d'Orata in crosta di Patate e Zucchine", en:"Sea bream fan in potato crust with zucchini", p:16, icon:"pesce" },
+  orata: { it:"Ventaglio d'Orata in crosta di Patate e Zucchine", en:"Sea bream fan in potato crust with zucchini", p:16, icon:"pesce", top:true },
   branzino: { it:"Branzino al Sale con Verdure scottate", en:"Salt-baked sea bass with blanched vegetables", p:16, icon:"pesce" },
   frittura: { it:"Frittura di Calamari Seppie e Gamberi in pastella", en:"Fried calamari, cuttlefish and prawns in batter", p:15, icon:"pesce" },
   grigliatamista: { it:"Grigliata mista di Carne con Patate al forno", en:"Mixed grilled meats with oven potatoes", p:14, icon:"grigliata" },
@@ -657,6 +673,13 @@ const MSG = {
 };
 
 /* ===== TELEFONO: prefisso +39 fisso, massimo 10 cifre ===== */
+// Spazi nel telefono: numeri che iniziano con 3 → dopo 3 cifre, con 0 → dopo 4 cifre
+function fmtPhone(v) {
+  const d = v.replace(/\D/g, "").slice(0, 10);
+  const cut = d[0] === "3" ? 3 : d[0] === "0" ? 4 : 0;
+  if (!cut || d.length <= cut) return d;
+  return d.slice(0, cut) + " " + d.slice(cut);
+}
 function phoneDigits() { return $("phone").value.replace(/\D/g, ""); }
 
 /* ===== LINGUA ===== */
@@ -685,7 +708,9 @@ function renderA() {
       <div class="card">
         ${sec.ids.map(id => {
           const d = DISHES[id];
-          return `<div class="dish">
+          const badge = d.top ? `<span class="dish-badge">🔥 ${lang==="en"?"Best seller":"Più ordinato"}</span>` : "";
+          const seas = d.season ? `<span class="dish-badge season">🌿 ${lang==="en"?"Seasonal":"Di stagione"}</span>` : "";
+          return `<div class="dish${d.top || d.season ? " top" : ""}">${badge}${seas}
             <div class="dish-main"><div class="dish-ico">${ICON[d.icon || id]}</div><div><div class="dish-name">${d[lang]}</div><div class="dish-price">${eur(d.p)}</div></div></div>
             <div class="stepper">
               <button class="minus" onclick="chgA('${id}',-1)" aria-label="−">−</button>
@@ -881,6 +906,14 @@ function closeDone() {
   $("done").classList.add("hidden");
   clearTimeout(lateTimer);
   if (wasOpen) showAsk();
+}
+async function shareMenu() {
+  const data = { title: "Pronto Chef", text: L().shareText, url: location.href };
+  try {
+    if (navigator.share) { await navigator.share(data); return; }
+    await navigator.clipboard.writeText(location.href);
+    alert(L().shareCopied || "Link copiato!");
+  } catch (e) { /* annullato dall'utente */ }
 }
 function showAsk() {
   $("askLink").href = document.querySelector(".btn-trip").href;
