@@ -292,11 +292,13 @@
     *, *::before, *::after { animation:none !important; transition:none !important; }
   }
   /* TELEFONI STRETTI: testo a tutta larghezza, pulsanti - + sotto a destra */
-  @media (max-width:420px) {
-    .dish { flex-wrap:wrap; gap:10px 12px; }
-    .dish-main { flex:1 1 100%; }
+  @media (max-width:600px) {
+    .dish { flex-wrap:wrap; gap:12px; }
+    .dish-main { width:100%; flex:0 0 100%; }
     .dish-name { line-height:1.3; }
-    .stepper { margin-left:auto; }
+    .stepper { margin-left:auto; flex-shrink:0; }
+    .stepper button { width:36px; height:36px; font-size:1.15rem; }
+    .stepper span { min-width:24px; font-size:.95rem; }
   }
 </style>
 </head>
