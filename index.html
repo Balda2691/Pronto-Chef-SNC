@@ -472,6 +472,7 @@
     <p class="done-time" data-i18n="responseTime">Di solito rispondiamo entro 15 minuti.</p>
     <p class="done-late hidden" id="doneLate" data-i18n="late">Non hai ricevuto risposta? Chiama il ristorante.</p>
     <div class="done-actions">
+      <a class="btn wa full" id="doneWa" href="#" target="_blank" rel="noopener" data-i18n="openWa">Apri WhatsApp</a>
       <button class="btn ghost full" onclick="copySummary(this)" data-i18n="copy">Copia riepilogo</button>
       <a class="btn full" id="doneCall" href="#" data-i18n="callBtn">Chiama il ristorante</a>
       <button class="btn-link" onclick="closeDone()" data-i18n="close">Chiudi</button>
@@ -534,7 +535,7 @@ const T = {
     payTitle:"Pagamento", cash:"Contanti", card:"Bancomat / POS", cashS:"Al ritiro o alla consegna",
     previewTitle:"Anteprima messaggio", previewNote:"Il messaggio verrà inviato al ristorante in italiano.",
     previewEmpty:"Aggiungi dei piatti per vedere il messaggio.",
-    waitNotice:"This is a request, not a confirmed order. The restaurant will reply on WhatsApp with the time: wait for confirmation before coming.", askTitle:"Ti è piaciuto il servizio?", askText:"Lascia una recensione su TripAdvisor: ci aiuta tantissimo!", askNo:"Non ora", doneTitle:"Richiesta inviata", codeLabel:"Numero richiesta", stepSent:"Richiesta inviata", stepWait:"In attesa di conferma", stepOk:"Confermato", doneText:"Grazie, la tua richiesta è stata inviata.", waitText:"Il ristorante verificherà la richiesta e ti confermerà l'orario su WhatsApp. Attendi la conferma prima di venire.", responseTime:"Di solito rispondiamo entro 15 minuti.", late:"Non hai ricevuto risposta? Chiama il ristorante.", copy:"Copia riepilogo", copied:"Copiato ✓", close:"Chiudi", barSend:"Invia richiesta", privacy:"I dati vengono inviati solo tramite WhatsApp al ristorante e non vengono salvati dal sito.", specialL:"Hai in mente un piatto che non c'è nel menù?", specialPh:"Scrivilo qui", specialHint:"Il ristorante ti risponderà su WhatsApp con disponibilità e prezzo. Il totale qui non include questa richiesta.", excludedNote:"esclusa richiesta speciale",
+    waitNotice:"This is a request, not a confirmed order. The restaurant will reply on WhatsApp with the time: wait for confirmation before coming.", askTitle:"Ti è piaciuto il servizio?", askText:"Lascia una recensione su TripAdvisor: ci aiuta tantissimo!", askNo:"Non ora", openWa:"Apri WhatsApp", doneTitle:"Richiesta inviata", codeLabel:"Numero richiesta", stepSent:"Richiesta inviata", stepWait:"In attesa di conferma", stepOk:"Confermato", doneText:"Grazie, la tua richiesta è stata inviata.", waitText:"Il ristorante verificherà la richiesta e ti confermerà l'orario su WhatsApp. Attendi la conferma prima di venire.", responseTime:"Di solito rispondiamo entro 15 minuti.", late:"Non hai ricevuto risposta? Chiama il ristorante.", copy:"Copia riepilogo", copied:"Copiato ✓", close:"Chiudi", barSend:"Invia richiesta", privacy:"I dati vengono inviati solo tramite WhatsApp al ristorante e non vengono salvati dal sito.", specialL:"Hai in mente un piatto che non c'è nel menù?", specialPh:"Scrivilo qui", specialHint:"Il ristorante ti risponderà su WhatsApp con disponibilità e prezzo. Il totale qui non include questa richiesta.", excludedNote:"esclusa richiesta speciale",
     barEmpty:"Carrello vuoto", barItems:(n)=> n===1 ? "1 articolo" : `${n} articoli`,
     missingPrefix:"Per inviare la richiesta mancano: ", addDishFirst:"Aggiungi almeno un piatto per inviare la richiesta.",
     completeFields:"Completa tutti i campi obbligatori (*).",
@@ -565,7 +566,7 @@ const T = {
     payTitle:"Payment", cash:"Cash", card:"Card / POS", cashS:"At pickup or delivery",
     previewTitle:"Message preview", previewNote:"The message will be sent to the restaurant in Italian.",
     previewEmpty:"Add some dishes to see the message.",
-    waitNotice:"The restaurant will confirm the time on WhatsApp before preparing your order.", askTitle:"Did you enjoy it?", askText:"Leave a review on TripAdvisor: it really helps us!", askNo:"Not now", doneTitle:"Request sent", codeLabel:"Request number", stepSent:"Request sent", stepWait:"Waiting for confirmation", stepOk:"Confirmed", doneText:"Thank you, your request has been sent.", waitText:"The restaurant will check your request and confirm the time on WhatsApp. Please wait for confirmation before coming.", responseTime:"We usually reply within 15 minutes.", late:"No reply yet? Call the restaurant.", copy:"Copy summary", copied:"Copied ✓", close:"Close", barSend:"Send request", privacy:"Your details are sent only via WhatsApp to the restaurant and are not stored by this site.", specialL:"Have a dish in mind that is not on the menu?", specialPh:"Write it here", specialHint:"The restaurant will reply on WhatsApp with availability and price. The total here does not include this request.", excludedNote:"special request excluded",
+    waitNotice:"The restaurant will confirm the time on WhatsApp before preparing your order.", askTitle:"Did you enjoy it?", askText:"Leave a review on TripAdvisor: it really helps us!", askNo:"Not now", openWa:"Open WhatsApp", doneTitle:"Request sent", codeLabel:"Request number", stepSent:"Request sent", stepWait:"Waiting for confirmation", stepOk:"Confirmed", doneText:"Thank you, your request has been sent.", waitText:"The restaurant will check your request and confirm the time on WhatsApp. Please wait for confirmation before coming.", responseTime:"We usually reply within 15 minutes.", late:"No reply yet? Call the restaurant.", copy:"Copy summary", copied:"Copied ✓", close:"Close", barSend:"Send request", privacy:"Your details are sent only via WhatsApp to the restaurant and are not stored by this site.", specialL:"Have a dish in mind that is not on the menu?", specialPh:"Write it here", specialHint:"The restaurant will reply on WhatsApp with availability and price. The total here does not include this request.", excludedNote:"special request excluded",
     barEmpty:"Cart empty", barItems:(n)=> n===1 ? "1 item" : `${n} items`,
     missingPrefix:"To send the request, please complete: ", addDishFirst:"Add at least one dish to send the request.",
     completeFields:"Please complete all required fields (*).",
@@ -830,6 +831,14 @@ function makeCode() {
   return `#R-${dd}${mm}-${n}`;
 }
 const DONE_DELAY_MS = 2500; // ritardo prima di aprire WhatsApp (ms)
+/* ===== AZZERA L'ORDINE DOPO L'INVIO ===== */
+function resetOrder() {
+  cart = [];
+  ["request","via","citta","citofono","name","phone","note"].forEach(id => { $(id).value = ""; });
+  $("optR").querySelector("input").checked = true;
+  initDate();
+  refresh();
+}
 function sendWA() {
   const err = $("formError");
   if (lastMissing.length > 0) { err.textContent = L().completeFields; return; }
@@ -837,11 +846,13 @@ function sendWA() {
   const code = makeCode();
   lastSummary = buildMessage("it", code);
   showDone(code);
+  resetOrder();
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lastSummary)}`;
   setTimeout(() => window.open(waUrl, "_blank", "noopener"), DONE_DELAY_MS);
 }
 function showDone(code) {
   $("doneCode").textContent = code;
+  $("doneWa").href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lastSummary)}`;
   $("doneCall").href = "tel:+" + WHATSAPP_NUMBER;
   $("doneLate").classList.add("hidden");
   $("done").classList.remove("hidden");
