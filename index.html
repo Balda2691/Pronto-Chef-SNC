@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#1f2937">
+<meta name="color-scheme" content="light">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <title>Pronto Chef - Ristorante d'Asporto</title>
@@ -30,6 +31,40 @@
   /* LOGO NELLA TESTATA */
   svg.brand-logo { display:block; width:min(280px,78%); height:auto; margin:4px auto 0; filter:drop-shadow(0 2px 8px rgba(0,0,0,.35)); }
   .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+
+  /* AVVISO E SCHERMATA RICHIESTA */
+  .notice { font-size:.88rem; color:var(--ink); background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:10px 12px; margin:12px 0 0; }
+  .done { position:fixed; inset:0; background:rgba(8,12,18,.6); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px; z-index:50; }
+  .done-card { background:#fff; border-radius:22px; padding:24px 20px; max-width:440px; width:100%; box-shadow:0 30px 60px rgba(0,0,0,.35); text-align:center; animation:pop .5s cubic-bezier(.2,.9,.3,1.2) backwards; }
+  .done-card h2 { font-size:1.4rem; margin:0 0 6px; color:var(--ink); }
+  .done-code { margin:0 0 16px; color:var(--ink-soft); font-size:.9rem; }
+  .done-code b { color:var(--accent-dark); font-size:1.05rem; letter-spacing:.04em; }
+  .steps { list-style:none; display:flex; justify-content:space-between; margin:0 0 16px; padding:0; }
+  .step { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; font-size:.75rem; color:var(--ink-soft); }
+  .step span { width:14px; height:14px; border-radius:50%; background:#e7e2da; }
+  .step.done span { background:#22c55e; }
+  .step.active span { background:var(--accent); animation:ping 1.6s ease-out infinite; }
+  .step em { font-style:normal; font-weight:600; }
+  .step.done em, .step.active em { color:var(--ink); }
+  @keyframes ping { 0% { box-shadow:0 0 0 0 rgba(228,87,46,.55); } 100% { box-shadow:0 0 0 12px rgba(228,87,46,0); } }
+  .done-text { font-size:.95rem; color:var(--ink); margin:0 0 8px; }
+  .done-time { font-size:.85rem; color:var(--ink-soft); margin:0 0 6px; }
+  .done-late { font-size:.9rem; color:var(--danger); font-weight:600; margin:8px 0 0; }
+  .done-actions { display:flex; flex-direction:column; gap:10px; margin-top:18px; }
+  .btn.ghost { background:#fff; color:var(--accent-dark); border:1.5px solid var(--accent); box-shadow:none; }
+  .btn-link { background:none; border:none; color:var(--ink-soft); font-size:.95rem; font-weight:600; padding:10px; cursor:pointer; min-height:44px; }
+
+  /* COMPATIBILITA MOBILE */
+  :root { color-scheme:light; }
+  html, body { overflow-x:hidden; }
+  body { padding-bottom:calc(132px + env(safe-area-inset-bottom)); }
+  input, select, textarea, button { max-width:100%; }
+  input, select, textarea { background:#fff; color:var(--ink); -webkit-text-fill-color:var(--ink); }
+  input[type=date] { -webkit-appearance:none; appearance:none; display:block; width:100%; min-width:0; max-width:100%; text-align:left; }
+  input[type=date]::-webkit-date-and-time-value { text-align:left; }
+  .phone-row { min-width:0; }
+  .phone-row input { min-width:0; }
+  .card { min-width:0; }
 
   /* TESTATA MODERNA: blocco fluttuante con bagliori animati */
   header { margin:12px 12px 0; border-radius:28px; padding:30px 22px 26px; background:linear-gradient(135deg, rgba(31,41,55,.92), rgba(17,24,39,.94)); -webkit-backdrop-filter:blur(18px) saturate(160%); backdrop-filter:blur(18px) saturate(160%); border:1px solid rgba(255,255,255,.12); overflow:hidden; box-shadow:0 18px 40px rgba(31,41,55,.22), inset 0 1px 0 rgba(255,255,255,.18); }
@@ -365,7 +400,8 @@
       <h2 data-i18n="previewTitle">Anteprima messaggio</h2>
       <div class="preview" id="preview"></div>
       <p class="preview-note" data-i18n="previewNote">Il messaggio verrà inviato al ristorante in italiano.</p>
-      <button class="btn wa" id="sendBtn" onclick="sendWA()" disabled><span class="wa-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="#fff" d="M16.2 14.3c-.2-.1-1.3-.6-1.5-.7-.2-.1-.4-.1-.5.1-.2.2-.6.7-.7.9-.1.1-.3.2-.5.1-.2-.1-.9-.3-1.7-1-.6-.6-1-1.3-1.2-1.5-.1-.2 0-.3.1-.4l.3-.4c.1-.1.2-.2.2-.4 0-.1 0-.3-.1-.4l-.7-1.6c-.2-.4-.4-.4-.5-.4h-.4c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.5 3.9 3.5 2.3.9 2.3.6 2.7.6.4 0 1.3-.5 1.5-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3z"/></svg></span><span data-i18n="sendBtn">Invia ordine su WhatsApp</span></button>
+      <p class="notice" data-i18n="waitNotice">Il ristorante confermerà l'orario su WhatsApp prima di preparare il tuo ordine.</p>
+      <button class="btn wa" id="sendBtn" onclick="sendWA()" disabled><span class="wa-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="#fff" d="M16.2 14.3c-.2-.1-1.3-.6-1.5-.7-.2-.1-.4-.1-.5.1-.2.2-.6.7-.7.9-.1.1-.3.2-.5.1-.2-.1-.9-.3-1.7-1-.6-.6-1-1.3-1.2-1.5-.1-.2 0-.3.1-.4l.3-.4c.1-.1.2-.2.2-.4 0-.1 0-.3-.1-.4l-.7-1.6c-.2-.4-.4-.4-.5-.4h-.4c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.5 3.9 3.5 2.3.9 2.3.6 2.7.6.4 0 1.3-.5 1.5-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3z"/></svg></span><span data-i18n="sendBtn">Invia richiesta su WhatsApp</span></button>
       <p class="hint" data-i18n="privacy" style="text-align:center;margin-top:10px;">I dati vengono inviati solo tramite WhatsApp al ristorante e non vengono salvati dal sito.</p>
       <p class="err" id="formError"></p>
     </div>
@@ -390,13 +426,33 @@
   </div>
 </footer>
 
+<div class="done hidden" id="done" role="dialog" aria-modal="true" aria-labelledby="doneTitle">
+  <div class="done-card">
+    <h2 id="doneTitle" data-i18n="doneTitle">Richiesta inviata</h2>
+    <p class="done-code"><span data-i18n="codeLabel">Numero richiesta</span> <b id="doneCode"></b></p>
+    <ol class="steps">
+      <li class="step done"><span></span><em data-i18n="stepSent">Richiesta inviata</em></li>
+      <li class="step active"><span></span><em data-i18n="stepWait">In attesa di conferma</em></li>
+      <li class="step"><span></span><em data-i18n="stepOk">Confermato</em></li>
+    </ol>
+    <p class="done-text" data-i18n="doneText">Il ristorante verificherà la richiesta e ti confermerà l'orario su WhatsApp. Attendi la conferma prima di venire.</p>
+    <p class="done-time" data-i18n="responseTime">Di solito rispondiamo entro 15 minuti.</p>
+    <p class="done-late hidden" id="doneLate" data-i18n="late">Non hai ricevuto risposta? Chiama il ristorante.</p>
+    <div class="done-actions">
+      <button class="btn ghost full" onclick="copySummary(this)" data-i18n="copy">Copia riepilogo</button>
+      <a class="btn full" id="doneCall" href="#" data-i18n="callBtn">Chiama il ristorante</a>
+      <button class="btn-link" onclick="closeDone()" data-i18n="close">Chiudi</button>
+    </div>
+  </div>
+</div>
+
 <!-- BARRA FISSA -->
 <div class="bottombar">
   <div class="sum">
     <small id="barCount"></small>
     <strong id="barTotal">0,00 €</strong>
   </div>
-  <button class="btn wa-bar" id="barSend" onclick="barSendClick()"><span class="wa-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="#fff" d="M16.2 14.3c-.2-.1-1.3-.6-1.5-.7-.2-.1-.4-.1-.5.1-.2.2-.6.7-.7.9-.1.1-.3.2-.5.1-.2-.1-.9-.3-1.7-1-.6-.6-1-1.3-1.2-1.5-.1-.2 0-.3.1-.4l.3-.4c.1-.1.2-.2.2-.4 0-.1 0-.3-.1-.4l-.7-1.6c-.2-.4-.4-.4-.5-.4h-.4c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.5 3.9 3.5 2.3.9 2.3.6 2.7.6.4 0 1.3-.5 1.5-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3z"/></svg></span><span data-i18n="barSend">Invia su WhatsApp</span></button>
+  <button class="btn wa-bar" id="barSend" onclick="barSendClick()"><span class="wa-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="#fff" d="M16.2 14.3c-.2-.1-1.3-.6-1.5-.7-.2-.1-.4-.1-.5.1-.2.2-.6.7-.7.9-.1.1-.3.2-.5.1-.2-.1-.9-.3-1.7-1-.6-.6-1-1.3-1.2-1.5-.1-.2 0-.3.1-.4l.3-.4c.1-.1.2-.2.2-.4 0-.1 0-.3-.1-.4l-.7-1.6c-.2-.4-.4-.4-.5-.4h-.4c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.5 3.9 3.5 2.3.9 2.3.6 2.7.6.4 0 1.3-.5 1.5-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3z"/></svg></span><span data-i18n="barSend">Invia richiesta su WhatsApp</span></button>
 </div>
 
 <script>
@@ -432,7 +488,7 @@ const T = {
     payTitle:"Pagamento", cash:"Contanti", card:"Bancomat / POS", cashS:"Al ritiro o alla consegna",
     previewTitle:"Anteprima messaggio", previewNote:"Il messaggio verrà inviato al ristorante in italiano.",
     previewEmpty:"Aggiungi dei piatti per vedere il messaggio.",
-    sendBtn:"Invia ordine su WhatsApp", barSend:"Invia su WhatsApp", privacy:"I dati vengono inviati solo tramite WhatsApp al ristorante e non vengono salvati dal sito.", specialL:"Hai in mente un piatto che non c'è nel menù?", specialPh:"Scrivilo qui", specialHint:"Il ristorante ti risponderà su WhatsApp con disponibilità e prezzo. Il totale qui non include questa richiesta.", excludedNote:"esclusa richiesta speciale",
+    sendBtn:"Invia richiesta su WhatsApp", waitNotice:"Il ristorante confermerà l'orario su WhatsApp prima di preparare il tuo ordine.", doneTitle:"Richiesta inviata", codeLabel:"Numero richiesta", stepSent:"Richiesta inviata", stepWait:"In attesa di conferma", stepOk:"Confermato", doneText:"Il ristorante verificherà la richiesta e ti confermerà l'orario su WhatsApp. Attendi la conferma prima di venire.", responseTime:"Di solito rispondiamo entro 15 minuti.", late:"Non hai ricevuto risposta? Chiama il ristorante.", copy:"Copia riepilogo", copied:"Copiato ✓", close:"Chiudi", barSend:"Invia richiesta su WhatsApp", privacy:"I dati vengono inviati solo tramite WhatsApp al ristorante e non vengono salvati dal sito.", specialL:"Hai in mente un piatto che non c'è nel menù?", specialPh:"Scrivilo qui", specialHint:"Il ristorante ti risponderà su WhatsApp con disponibilità e prezzo. Il totale qui non include questa richiesta.", excludedNote:"esclusa richiesta speciale",
     barEmpty:"Carrello vuoto", barItems:(n)=> n===1 ? "1 articolo" : `${n} articoli`,
     missingPrefix:"Per inviare l'ordine mancano: ", addDishFirst:"Aggiungi almeno un piatto per inviare l'ordine.",
     completeFields:"Completa tutti i campi obbligatori (*).",
@@ -463,7 +519,7 @@ const T = {
     payTitle:"Payment", cash:"Cash", card:"Card / POS", cashS:"At pickup or delivery",
     previewTitle:"Message preview", previewNote:"The message will be sent to the restaurant in Italian.",
     previewEmpty:"Add some dishes to see the message.",
-    sendBtn:"Send order via WhatsApp", barSend:"Send via WhatsApp", privacy:"Your details are sent only via WhatsApp to the restaurant and are not stored by this site.", specialL:"Have a dish in mind that is not on the menu?", specialPh:"Write it here", specialHint:"The restaurant will reply on WhatsApp with availability and price. The total here does not include this request.", excludedNote:"special request excluded",
+    sendBtn:"Send request via WhatsApp", waitNotice:"The restaurant will confirm the time on WhatsApp before preparing your order.", doneTitle:"Request sent", codeLabel:"Request number", stepSent:"Request sent", stepWait:"Waiting for confirmation", stepOk:"Confirmed", doneText:"The restaurant will check your request and confirm the time on WhatsApp. Please wait for confirmation before coming.", responseTime:"We usually reply within 15 minutes.", late:"No reply yet? Call the restaurant.", copy:"Copy summary", copied:"Copied ✓", close:"Close", barSend:"Send request via WhatsApp", privacy:"Your details are sent only via WhatsApp to the restaurant and are not stored by this site.", specialL:"Have a dish in mind that is not on the menu?", specialPh:"Write it here", specialHint:"The restaurant will reply on WhatsApp with availability and price. The total here does not include this request.", excludedNote:"special request excluded",
     barEmpty:"Cart empty", barItems:(n)=> n===1 ? "1 item" : `${n} items`,
     missingPrefix:"To send the order, please complete: ", addDishFirst:"Add at least one dish to send the order.",
     completeFields:"Please complete all required fields (*).",
@@ -536,10 +592,10 @@ const lineLabel = (c, lg) => DISHES[c.id][lg];
 
 /* ===== ETICHETTE DEL MESSAGGIO (anteprima) ===== */
 const MSG = {
-  it: { order:"*NUOVO ORDINE*", special:"Richiesta speciale", toConfirm:"prezzo da confermare", pickup:"Ritiro in negozio", delivery:"Consegna a domicilio", date:"Data", time:"Orario",
+  it: { order:"*NUOVA RICHIESTA*", code:"N. richiesta", special:"Richiesta speciale", toConfirm:"prezzo da confermare", pickup:"Ritiro in negozio", delivery:"Consegna a domicilio", date:"Data", time:"Orario richiesto",
         payment:"Pagamento", total:"Totale", client:"Cliente", phone:"Telefono", address:"Indirizzo", doorbell:"Citofono", note:"Note",
         pay:{ "Contanti":"Contanti", "Bancomat / POS":"Bancomat / POS" } },
-  en: { order:"*NEW ORDER*", special:"Special request", toConfirm:"price to be confirmed", pickup:"Pickup at the restaurant", delivery:"Home delivery", date:"Date", time:"Time",
+  en: { order:"*NEW REQUEST*", code:"Request no.", special:"Special request", toConfirm:"price to be confirmed", pickup:"Pickup at the restaurant", delivery:"Home delivery", date:"Date", time:"Requested time",
         payment:"Payment", total:"Total", client:"Customer", phone:"Phone", address:"Address", doorbell:"Doorbell", note:"Notes",
         pay:{ "Contanti":"Cash", "Bancomat / POS":"Card / POS" } }
 };
@@ -640,13 +696,14 @@ function buildSlots() {
 }
 
 /* ===== MESSAGGIO WHATSAPP (sempre in italiano) ===== */
-function buildMessage(lg = "it") {
+function buildMessage(lg = "it", code = null) {
   const M = MSG[lg];
   const req = $("request").value.trim();
   const del = isDelivery();
   const [y,m,d] = $("date").value ? $("date").value.split("-") : ["","",""];
   const lines = [
     M.order, "",
+    ...(code ? [`${M.code}: ${code}`, ""] : []),
     ...cart.map(c => `${c.qty} x ${lineLabel(c, lg)} - ${eur(priceOf(c))}`),
     "",
     ...(req ? [`*${M.special}: ${req}* (${M.toConfirm})`, ""] : []),
@@ -707,11 +764,48 @@ function refresh() {
     : (missing.length ? L().addDishFirst : "");
 }
 function onChange() { buildSlots(); }
+let lastSummary = "";
+let lateTimer = null;
+function makeCode() {
+  const d = new Date();
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const n = String(Math.floor(Math.random() * 100)).padStart(2, "0");
+  return `#R-${dd}${mm}-${n}`;
+}
 function sendWA() {
   const err = $("formError");
   if ($("sendBtn").disabled) { err.textContent = L().completeFields; return; }
   err.textContent = "";
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildMessage())}`, "_blank", "noopener");
+  const code = makeCode();
+  lastSummary = buildMessage("it", code);
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lastSummary)}`, "_blank", "noopener");
+  showDone(code);
+}
+function showDone(code) {
+  $("doneCode").textContent = code;
+  $("doneCall").href = "tel:+" + WHATSAPP_NUMBER;
+  $("doneLate").classList.add("hidden");
+  $("done").classList.remove("hidden");
+  clearTimeout(lateTimer);
+  lateTimer = setTimeout(() => $("doneLate").classList.remove("hidden"), 15 * 60 * 1000);
+}
+function closeDone() {
+  $("done").classList.add("hidden");
+  clearTimeout(lateTimer);
+}
+function copySummary(btn) {
+  const label = btn.textContent;
+  const done = () => { btn.textContent = L().copied; setTimeout(() => btn.textContent = label, 1600); };
+  const fallback = () => {
+    const ta = document.createElement("textarea");
+    ta.value = lastSummary; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) {}
+    ta.remove();
+  };
+  if (navigator.clipboard) navigator.clipboard.writeText(lastSummary).then(done).catch(fallback);
+  else fallback();
 }
 
 /* ===== STATO APERTO / CHIUSO ===== */
