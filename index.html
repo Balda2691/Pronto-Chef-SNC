@@ -34,13 +34,14 @@
 
   /* AVVISO E SCHERMATA RICHIESTA */
   .notice { font-size:.88rem; color:var(--ink); background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:10px 12px; margin:12px 0 0; }
-  .done { position:fixed; inset:0; background:rgba(8,12,18,.6); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); display:flex; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom)); z-index:50; }
-  .done-card { margin:auto; background:#fff; border-radius:22px; padding:24px 20px; max-width:440px; width:100%; box-shadow:0 30px 60px rgba(0,0,0,.35); text-align:center; animation:pop .5s cubic-bezier(.2,.9,.3,1.2) backwards; }
+  .done { position:fixed; inset:0; background:rgba(8,12,18,.78); display:flex; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom)); z-index:50; }
+  .done-card { margin:auto; background:#fff; color:var(--ink); border-radius:22px; padding:24px 20px; max-width:440px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,.35); text-align:center; }
   .done-card h2 { font-size:1.4rem; margin:0 0 6px; color:var(--ink); }
   .done-code { margin:0 0 16px; color:var(--ink-soft); font-size:.9rem; }
   .done-code b { color:var(--accent-dark); font-size:1.05rem; letter-spacing:.04em; }
-  .steps { list-style:none; display:flex; justify-content:space-between; margin:0 0 16px; padding:0; }
-  .step { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; font-size:.75rem; color:var(--ink-soft); }
+  .steps { list-style:none; display:flex; justify-content:space-between; margin:0 0 16px; padding:0; position:static; }
+  .steps li { position:static; }
+  .step { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; font-size:.75rem; color:var(--ink-soft); position:static; }
   .step span { width:14px; height:14px; border-radius:50%; background:#e7e2da; }
   .step.done span { background:#22c55e; }
   .step.active span { background:var(--accent); animation:ping 1.6s ease-out infinite; }
@@ -53,6 +54,24 @@
   .done-actions { display:flex; flex-direction:column; gap:10px; margin-top:18px; }
   .btn.ghost { background:#fff; color:var(--accent-dark); border:1.5px solid var(--accent); box-shadow:none; }
   .btn-link { background:none; border:none; color:var(--ink-soft); font-size:.95rem; font-weight:600; padding:10px; cursor:pointer; min-height:44px; }
+
+  /* AVVISO RICHIESTA: sempre visibile */
+  .notice-strong { font-size:.95rem; font-weight:600; color:#fde68a; background:rgba(245,158,11,.14); border:1.5px solid #f59e0b; border-radius:14px; padding:12px 14px; margin:0 0 14px; line-height:1.45; }
+
+  /* BARRA COMPATTA E ANTEPRIMA A TENDINA */
+  .bottombar .sum small { white-space:nowrap; }
+  .bottombar .sum strong { font-size:1.5rem; }
+  .bottombar .btn { padding:0 20px; }
+  .bump { display:inline-block; animation:bump .45s ease; }
+  @keyframes bump { 0% { transform:scale(1); } 40% { transform:scale(1.3); } 100% { transform:scale(1); } }
+  .msg-details { padding:0; overflow:hidden; }
+  .msg-details summary { list-style:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:16px; font-weight:700; font-size:1.15rem; min-height:52px; }
+  .msg-details summary::-webkit-details-marker { display:none; }
+  .msg-details .chev { transition:transform .25s ease; color:var(--ink-soft); }
+  .msg-details[open] .chev { transform:rotate(180deg); }
+  .msg-details > :not(summary) { margin-left:16px; margin-right:16px; }
+  .msg-details > :last-child { margin-bottom:16px; }
+  .box-err { font-weight:600; background:#fef2f2; border:1.5px solid #fca5a5; border-radius:14px; padding:12px 14px; margin:12px 0 0; color:var(--danger); line-height:1.45; }
 
   /* COMPATIBILITA MOBILE */
   :root { color-scheme:light; }
@@ -396,15 +415,17 @@
 
   <!-- ANTEPRIMA E INVIO -->
   <section>
-    <div class="card">
-      <h2 data-i18n="previewTitle">Anteprima messaggio</h2>
+    <p class="notice notice-strong" data-i18n="waitNotice">Questa è una richiesta, non un ordine confermato. Il ristorante ti risponderà su WhatsApp con l'orario: attendi la conferma prima di venire.</p>
+  </section>
+
+  <section>
+    <details class="card msg-details" id="msgDetails">
+      <summary><span data-i18n="previewTitle">Anteprima messaggio</span><span class="chev" aria-hidden="true">▾</span></summary>
       <div class="preview" id="preview"></div>
       <p class="preview-note" data-i18n="previewNote">Il messaggio verrà inviato al ristorante in italiano.</p>
-      <p class="notice" data-i18n="waitNotice">Il ristorante confermerà l'orario su WhatsApp prima di preparare il tuo ordine.</p>
-      <button class="btn wa" id="sendBtn" onclick="sendWA()" disabled><span class="wa-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="#fff" d="M16.2 14.3c-.2-.1-1.3-.6-1.5-.7-.2-.1-.4-.1-.5.1-.2.2-.6.7-.7.9-.1.1-.3.2-.5.1-.2-.1-.9-.3-1.7-1-.6-.6-1-1.3-1.2-1.5-.1-.2 0-.3.1-.4l.3-.4c.1-.1.2-.2.2-.4 0-.1 0-.3-.1-.4l-.7-1.6c-.2-.4-.4-.4-.5-.4h-.4c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.5 3.9 3.5 2.3.9 2.3.6 2.7.6.4 0 1.3-.5 1.5-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3z"/></svg></span><span data-i18n="sendBtn">Invia richiesta su WhatsApp</span></button>
-      <p class="hint" data-i18n="privacy" style="text-align:center;margin-top:10px;">I dati vengono inviati solo tramite WhatsApp al ristorante e non vengono salvati dal sito.</p>
-      <p class="err" id="formError"></p>
-    </div>
+      <p class="hint" data-i18n="privacy" style="text-align:center;">I dati vengono inviati solo tramite WhatsApp al ristorante e non vengono salvati dal sito.</p>
+    </details>
+    <p class="err box-err hidden" id="formError"></p>
   </section>
 
   <section>
@@ -452,7 +473,7 @@
     <small id="barCount"></small>
     <strong id="barTotal">0,00 €</strong>
   </div>
-  <button class="btn wa-bar" id="barSend" onclick="barSendClick()"><span class="wa-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="#fff" d="M16.2 14.3c-.2-.1-1.3-.6-1.5-.7-.2-.1-.4-.1-.5.1-.2.2-.6.7-.7.9-.1.1-.3.2-.5.1-.2-.1-.9-.3-1.7-1-.6-.6-1-1.3-1.2-1.5-.1-.2 0-.3.1-.4l.3-.4c.1-.1.2-.2.2-.4 0-.1 0-.3-.1-.4l-.7-1.6c-.2-.4-.4-.4-.5-.4h-.4c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.5 3.9 3.5 2.3.9 2.3.6 2.7.6.4 0 1.3-.5 1.5-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3z"/></svg></span><span data-i18n="barSend">Invia richiesta su WhatsApp</span></button>
+  <button class="btn wa-bar" id="barSend" onclick="barSendClick()"><span class="wa-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="#fff" d="M16.2 14.3c-.2-.1-1.3-.6-1.5-.7-.2-.1-.4-.1-.5.1-.2.2-.6.7-.7.9-.1.1-.3.2-.5.1-.2-.1-.9-.3-1.7-1-.6-.6-1-1.3-1.2-1.5-.1-.2 0-.3.1-.4l.3-.4c.1-.1.2-.2.2-.4 0-.1 0-.3-.1-.4l-.7-1.6c-.2-.4-.4-.4-.5-.4h-.4c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.5 3.9 3.5 2.3.9 2.3.6 2.7.6.4 0 1.3-.5 1.5-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3z"/></svg></span><span data-i18n="barSend">Invia richiesta</span></button>
 </div>
 
 <script>
@@ -488,9 +509,9 @@ const T = {
     payTitle:"Pagamento", cash:"Contanti", card:"Bancomat / POS", cashS:"Al ritiro o alla consegna",
     previewTitle:"Anteprima messaggio", previewNote:"Il messaggio verrà inviato al ristorante in italiano.",
     previewEmpty:"Aggiungi dei piatti per vedere il messaggio.",
-    sendBtn:"Invia richiesta su WhatsApp", waitNotice:"Il ristorante confermerà l'orario su WhatsApp prima di preparare il tuo ordine.", doneTitle:"Richiesta inviata", codeLabel:"Numero richiesta", stepSent:"Richiesta inviata", stepWait:"In attesa di conferma", stepOk:"Confermato", doneText:"Il ristorante verificherà la richiesta e ti confermerà l'orario su WhatsApp. Attendi la conferma prima di venire.", responseTime:"Di solito rispondiamo entro 15 minuti.", late:"Non hai ricevuto risposta? Chiama il ristorante.", copy:"Copia riepilogo", copied:"Copiato ✓", close:"Chiudi", barSend:"Invia richiesta su WhatsApp", privacy:"I dati vengono inviati solo tramite WhatsApp al ristorante e non vengono salvati dal sito.", specialL:"Hai in mente un piatto che non c'è nel menù?", specialPh:"Scrivilo qui", specialHint:"Il ristorante ti risponderà su WhatsApp con disponibilità e prezzo. Il totale qui non include questa richiesta.", excludedNote:"esclusa richiesta speciale",
+    waitNotice:"This is a request, not a confirmed order. The restaurant will reply on WhatsApp with the time: wait for confirmation before coming.", doneTitle:"Richiesta inviata", codeLabel:"Numero richiesta", stepSent:"Richiesta inviata", stepWait:"In attesa di conferma", stepOk:"Confermato", doneText:"Il ristorante verificherà la richiesta e ti confermerà l'orario su WhatsApp. Attendi la conferma prima di venire.", responseTime:"Di solito rispondiamo entro 15 minuti.", late:"Non hai ricevuto risposta? Chiama il ristorante.", copy:"Copia riepilogo", copied:"Copiato ✓", close:"Chiudi", barSend:"Invia richiesta", privacy:"I dati vengono inviati solo tramite WhatsApp al ristorante e non vengono salvati dal sito.", specialL:"Hai in mente un piatto che non c'è nel menù?", specialPh:"Scrivilo qui", specialHint:"Il ristorante ti risponderà su WhatsApp con disponibilità e prezzo. Il totale qui non include questa richiesta.", excludedNote:"esclusa richiesta speciale",
     barEmpty:"Carrello vuoto", barItems:(n)=> n===1 ? "1 articolo" : `${n} articoli`,
-    missingPrefix:"Per inviare l'ordine mancano: ", addDishFirst:"Aggiungi almeno un piatto per inviare l'ordine.",
+    missingPrefix:"Per inviare la richiesta mancano: ", addDishFirst:"Aggiungi almeno un piatto per inviare la richiesta.",
     completeFields:"Completa tutti i campi obbligatori (*).",
     mCart:"almeno un piatto nel carrello", mName:"nome e cognome", mPhone:"telefono",
     mTime:"orario", mVia:"via e numero civico", mCitta:"città",
@@ -519,9 +540,9 @@ const T = {
     payTitle:"Payment", cash:"Cash", card:"Card / POS", cashS:"At pickup or delivery",
     previewTitle:"Message preview", previewNote:"The message will be sent to the restaurant in Italian.",
     previewEmpty:"Add some dishes to see the message.",
-    sendBtn:"Send request via WhatsApp", waitNotice:"The restaurant will confirm the time on WhatsApp before preparing your order.", doneTitle:"Request sent", codeLabel:"Request number", stepSent:"Request sent", stepWait:"Waiting for confirmation", stepOk:"Confirmed", doneText:"The restaurant will check your request and confirm the time on WhatsApp. Please wait for confirmation before coming.", responseTime:"We usually reply within 15 minutes.", late:"No reply yet? Call the restaurant.", copy:"Copy summary", copied:"Copied ✓", close:"Close", barSend:"Send request via WhatsApp", privacy:"Your details are sent only via WhatsApp to the restaurant and are not stored by this site.", specialL:"Have a dish in mind that is not on the menu?", specialPh:"Write it here", specialHint:"The restaurant will reply on WhatsApp with availability and price. The total here does not include this request.", excludedNote:"special request excluded",
+    waitNotice:"The restaurant will confirm the time on WhatsApp before preparing your order.", doneTitle:"Request sent", codeLabel:"Request number", stepSent:"Request sent", stepWait:"Waiting for confirmation", stepOk:"Confirmed", doneText:"The restaurant will check your request and confirm the time on WhatsApp. Please wait for confirmation before coming.", responseTime:"We usually reply within 15 minutes.", late:"No reply yet? Call the restaurant.", copy:"Copy summary", copied:"Copied ✓", close:"Close", barSend:"Send request", privacy:"Your details are sent only via WhatsApp to the restaurant and are not stored by this site.", specialL:"Have a dish in mind that is not on the menu?", specialPh:"Write it here", specialHint:"The restaurant will reply on WhatsApp with availability and price. The total here does not include this request.", excludedNote:"special request excluded",
     barEmpty:"Cart empty", barItems:(n)=> n===1 ? "1 item" : `${n} items`,
-    missingPrefix:"To send the order, please complete: ", addDishFirst:"Add at least one dish to send the order.",
+    missingPrefix:"To send the request, please complete: ", addDishFirst:"Add at least one dish to send the request.",
     completeFields:"Please complete all required fields (*).",
     mCart:"at least one dish in the cart", mName:"full name", mPhone:"phone",
     mTime:"time", mVia:"street and number", mCitta:"city",
@@ -734,6 +755,8 @@ function waFormat(text) {
 
 /* ===== AGGIORNAMENTO E VALIDAZIONE ===== */
 function refresh() {
+  if (count() > lastCount) bumpCart();
+  lastCount = count();
   $("optR").classList.toggle("on", !isDelivery());
   $("optC").classList.toggle("on", isDelivery());
   $("addrBox").classList.toggle("hidden", !isDelivery());
@@ -756,15 +779,23 @@ function refresh() {
   ["name","phone","time","via","citta"].forEach(id => {
     $(id).classList.toggle("missing", missing.some(c => c.ids.includes(id)));
   });
-  $("sendBtn").disabled = missing.length > 0;
   lastMissing = missing;
   $("barSend").classList.toggle("is-off", missing.length > 0);
-  $("formError").textContent = missing.length && cart.length
+  const errText = missing.length && cart.length
     ? L().missingPrefix + missing.map(c => c.label).join(", ") + "."
     : (missing.length ? L().addDishFirst : "");
+  $("formError").textContent = errText;
+  $("formError").classList.toggle("hidden", !errText);
 }
 function onChange() { buildSlots(); }
 let lastSummary = "";
+let lastCount = 0;
+function bumpCart() {
+  const el = $("barCount");
+  el.classList.remove("bump");
+  void el.offsetWidth;
+  el.classList.add("bump");
+}
 let lateTimer = null;
 function makeCode() {
   const d = new Date();
@@ -775,7 +806,7 @@ function makeCode() {
 }
 function sendWA() {
   const err = $("formError");
-  if ($("sendBtn").disabled) { err.textContent = L().completeFields; return; }
+  if (lastMissing.length > 0) { err.textContent = L().completeFields; return; }
   err.textContent = "";
   const code = makeCode();
   lastSummary = buildMessage("it", code);
