@@ -829,14 +829,16 @@ function makeCode() {
   const n = String(Math.floor(Math.random() * 100)).padStart(2, "0");
   return `#R-${dd}${mm}-${n}`;
 }
+const DONE_DELAY_MS = 2500; // ritardo prima di aprire WhatsApp (ms)
 function sendWA() {
   const err = $("formError");
   if (lastMissing.length > 0) { err.textContent = L().completeFields; return; }
   err.textContent = "";
   const code = makeCode();
   lastSummary = buildMessage("it", code);
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lastSummary)}`, "_blank", "noopener");
   showDone(code);
+  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lastSummary)}`;
+  setTimeout(() => window.open(waUrl, "_blank", "noopener"), DONE_DELAY_MS);
 }
 function showDone(code) {
   $("doneCode").textContent = code;
