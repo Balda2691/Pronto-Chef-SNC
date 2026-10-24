@@ -830,7 +830,6 @@ function makeCode() {
   const n = String(Math.floor(Math.random() * 100)).padStart(2, "0");
   return `#R-${dd}${mm}-${n}`;
 }
-const DONE_DELAY_MS = 2500; // ritardo prima di aprire WhatsApp (ms)
 /* ===== AZZERA L'ORDINE DOPO L'INVIO ===== */
 function resetOrder() {
   cart = [];
@@ -839,17 +838,26 @@ function resetOrder() {
   initDate();
   refresh();
 }
+let pendingCode = null; // richiesta aperta su WhatsApp, in attesa del ritorno sul sito
 function sendWA() {
   const err = $("formError");
   if (lastMissing.length > 0) { err.textContent = L().completeFields; return; }
   err.textContent = "";
   const code = makeCode();
   lastSummary = buildMessage("it", code);
-  showDone(code);
-  resetOrder();
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lastSummary)}`;
-  setTimeout(() => window.open(waUrl, "_blank", "noopener"), DONE_DELAY_MS);
+  window.open(waUrl, "_blank", "noopener");
+  pendingCode = code; // la conferma comparirà quando il cliente torna sul sito
 }
+// Quando il cliente torna sulla pagina dopo WhatsApp, mostra la conferma
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && pendingCode) {
+    const code = pendingCode;
+    pendingCode = null;
+    showDone(code);
+    resetOrder();
+  }
+});
 function showDone(code) {
   $("doneCode").textContent = code;
   $("doneWa").href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lastSummary)}`;
