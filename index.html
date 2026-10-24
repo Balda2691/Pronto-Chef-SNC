@@ -34,8 +34,8 @@
 
   /* AVVISO E SCHERMATA RICHIESTA */
   .notice { font-size:.88rem; color:var(--ink); background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:10px 12px; margin:12px 0 0; }
-  .done { position:fixed; inset:0; background:rgba(8,12,18,.6); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px; z-index:50; }
-  .done-card { background:#fff; border-radius:22px; padding:24px 20px; max-width:440px; width:100%; box-shadow:0 30px 60px rgba(0,0,0,.35); text-align:center; animation:pop .5s cubic-bezier(.2,.9,.3,1.2) backwards; }
+  .done { position:fixed; inset:0; background:rgba(8,12,18,.6); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); display:flex; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom)); z-index:50; }
+  .done-card { margin:auto; background:#fff; border-radius:22px; padding:24px 20px; max-width:440px; width:100%; box-shadow:0 30px 60px rgba(0,0,0,.35); text-align:center; animation:pop .5s cubic-bezier(.2,.9,.3,1.2) backwards; }
   .done-card h2 { font-size:1.4rem; margin:0 0 6px; color:var(--ink); }
   .done-code { margin:0 0 16px; color:var(--ink-soft); font-size:.9rem; }
   .done-code b { color:var(--accent-dark); font-size:1.05rem; letter-spacing:.04em; }
@@ -426,7 +426,7 @@
   </div>
 </footer>
 
-<div class="done hidden" id="done" role="dialog" aria-modal="true" aria-labelledby="doneTitle">
+<div class="done hidden" id="done" role="dialog" aria-modal="true" aria-labelledby="doneTitle" onclick="if(event.target===this)closeDone()">
   <div class="done-card">
     <h2 id="doneTitle" data-i18n="doneTitle">Richiesta inviata</h2>
     <p class="done-code"><span data-i18n="codeLabel">Numero richiesta</span> <b id="doneCode"></b></p>
@@ -794,6 +794,7 @@ function closeDone() {
   $("done").classList.add("hidden");
   clearTimeout(lateTimer);
 }
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDone(); });
 function copySummary(btn) {
   const label = btn.textContent;
   const done = () => { btn.textContent = L().copied; setTimeout(() => btn.textContent = label, 1600); };
