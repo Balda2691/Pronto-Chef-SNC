@@ -232,6 +232,22 @@
   .trip-ico svg { width:22px; height:22px; }
   .thanks { margin:12px 0 0; padding:12px 14px; border-radius:12px; background:#e7f8f1; color:#0f5b46; font-size:.92rem; text-align:center; animation:pop .5s ease backwards; }
 
+  /* INVITO A RECENSIRE DOPO LA CHIUSURA */
+  .ask { position:fixed; inset:0; background:rgba(8,12,18,.7); display:flex; padding:20px; z-index:60; }
+  .ask-card { margin:auto; background:#fff; color:var(--ink); border-radius:22px; padding:26px 22px; max-width:400px; width:100%; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,.35); animation:askIn .6s cubic-bezier(.2,.9,.3,1.2) both; }
+  @keyframes askIn { from { opacity:0; transform:translateY(30px) scale(.9); } to { opacity:1; transform:none; } }
+  .ask-stars { margin-bottom:6px; }
+  .ask-stars span { display:inline-block; font-size:2rem; color:#e5e7eb; animation:starOn .5s ease-out forwards; }
+  .ask-stars span:nth-child(1) { animation-delay:.35s; }
+  .ask-stars span:nth-child(2) { animation-delay:.6s; }
+  .ask-stars span:nth-child(3) { animation-delay:.85s; }
+  .ask-stars span:nth-child(4) { animation-delay:1.1s; }
+  .ask-stars span:nth-child(5) { animation-delay:1.35s; }
+  @keyframes starOn { 0% { color:#e5e7eb; transform:scale(.4); } 60% { transform:scale(1.25); } 100% { color:#f5b400; transform:scale(1); } }
+  .ask-card h2 { font-size:1.3rem; margin:6px 0 6px; color:var(--ink); }
+  .ask-card .ask-link { animation:tripPulse 2.2s ease-in-out 1.6s infinite; }
+  @keyframes tripPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.04); } }
+
   /* ICONE PIATTI */
   .dish-main { display:flex; align-items:center; gap:12px; min-width:0; }
   .dish-ico { width:46px; height:46px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,#fdeee6,#f8d9c8); color:var(--accent-dark); display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 1px rgba(194,67,31,.12); }
@@ -451,18 +467,27 @@
   <div class="done-card">
     <h2 id="doneTitle" data-i18n="doneTitle">Richiesta inviata</h2>
     <p class="done-code"><span data-i18n="codeLabel">Numero richiesta</span> <b id="doneCode"></b></p>
-    <ol class="steps">
-      <li class="step done"><span></span><em data-i18n="stepSent">Richiesta inviata</em></li>
-      <li class="step active"><span></span><em data-i18n="stepWait">In attesa di conferma</em></li>
-      <li class="step"><span></span><em data-i18n="stepOk">Confermato</em></li>
-    </ol>
-    <p class="done-text" data-i18n="doneText">Il ristorante verificherà la richiesta e ti confermerà l'orario su WhatsApp. Attendi la conferma prima di venire.</p>
+    <p class="done-text" data-i18n="doneText">Grazie, la tua richiesta è stata inviata.</p>
+    <p class="done-text" data-i18n="waitText">Il ristorante verificherà la richiesta e ti confermerà l'orario su WhatsApp. Attendi la conferma prima di venire.</p>
     <p class="done-time" data-i18n="responseTime">Di solito rispondiamo entro 15 minuti.</p>
     <p class="done-late hidden" id="doneLate" data-i18n="late">Non hai ricevuto risposta? Chiama il ristorante.</p>
     <div class="done-actions">
       <button class="btn ghost full" onclick="copySummary(this)" data-i18n="copy">Copia riepilogo</button>
       <a class="btn full" id="doneCall" href="#" data-i18n="callBtn">Chiama il ristorante</a>
       <button class="btn-link" onclick="closeDone()" data-i18n="close">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<!-- INVITO RECENSIONE -->
+<div class="ask hidden" id="askReview" onclick="if(event.target===this)closeAsk()">
+  <div class="ask-card">
+    <div class="ask-stars" aria-hidden="true"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+    <h2 data-i18n="askTitle">Ti è piaciuto il servizio?</h2>
+    <p class="done-text" data-i18n="askText">Lascia una recensione su TripAdvisor: ci aiuta tantissimo!</p>
+    <div class="done-actions">
+      <a class="btn btn-trip full ask-link" id="askLink" href="#" target="_blank" rel="noopener" onclick="closeAsk()" data-i18n="review">Lascia una recensione su TripAdvisor</a>
+      <button class="btn-link" onclick="closeAsk()" data-i18n="askNo">Non ora</button>
     </div>
   </div>
 </div>
@@ -509,7 +534,7 @@ const T = {
     payTitle:"Pagamento", cash:"Contanti", card:"Bancomat / POS", cashS:"Al ritiro o alla consegna",
     previewTitle:"Anteprima messaggio", previewNote:"Il messaggio verrà inviato al ristorante in italiano.",
     previewEmpty:"Aggiungi dei piatti per vedere il messaggio.",
-    waitNotice:"This is a request, not a confirmed order. The restaurant will reply on WhatsApp with the time: wait for confirmation before coming.", doneTitle:"Richiesta inviata", codeLabel:"Numero richiesta", stepSent:"Richiesta inviata", stepWait:"In attesa di conferma", stepOk:"Confermato", doneText:"Il ristorante verificherà la richiesta e ti confermerà l'orario su WhatsApp. Attendi la conferma prima di venire.", responseTime:"Di solito rispondiamo entro 15 minuti.", late:"Non hai ricevuto risposta? Chiama il ristorante.", copy:"Copia riepilogo", copied:"Copiato ✓", close:"Chiudi", barSend:"Invia richiesta", privacy:"I dati vengono inviati solo tramite WhatsApp al ristorante e non vengono salvati dal sito.", specialL:"Hai in mente un piatto che non c'è nel menù?", specialPh:"Scrivilo qui", specialHint:"Il ristorante ti risponderà su WhatsApp con disponibilità e prezzo. Il totale qui non include questa richiesta.", excludedNote:"esclusa richiesta speciale",
+    waitNotice:"This is a request, not a confirmed order. The restaurant will reply on WhatsApp with the time: wait for confirmation before coming.", askTitle:"Ti è piaciuto il servizio?", askText:"Lascia una recensione su TripAdvisor: ci aiuta tantissimo!", askNo:"Non ora", doneTitle:"Richiesta inviata", codeLabel:"Numero richiesta", stepSent:"Richiesta inviata", stepWait:"In attesa di conferma", stepOk:"Confermato", doneText:"Grazie, la tua richiesta è stata inviata.", waitText:"Il ristorante verificherà la richiesta e ti confermerà l'orario su WhatsApp. Attendi la conferma prima di venire.", responseTime:"Di solito rispondiamo entro 15 minuti.", late:"Non hai ricevuto risposta? Chiama il ristorante.", copy:"Copia riepilogo", copied:"Copiato ✓", close:"Chiudi", barSend:"Invia richiesta", privacy:"I dati vengono inviati solo tramite WhatsApp al ristorante e non vengono salvati dal sito.", specialL:"Hai in mente un piatto che non c'è nel menù?", specialPh:"Scrivilo qui", specialHint:"Il ristorante ti risponderà su WhatsApp con disponibilità e prezzo. Il totale qui non include questa richiesta.", excludedNote:"esclusa richiesta speciale",
     barEmpty:"Carrello vuoto", barItems:(n)=> n===1 ? "1 articolo" : `${n} articoli`,
     missingPrefix:"Per inviare la richiesta mancano: ", addDishFirst:"Aggiungi almeno un piatto per inviare la richiesta.",
     completeFields:"Completa tutti i campi obbligatori (*).",
@@ -540,7 +565,7 @@ const T = {
     payTitle:"Payment", cash:"Cash", card:"Card / POS", cashS:"At pickup or delivery",
     previewTitle:"Message preview", previewNote:"The message will be sent to the restaurant in Italian.",
     previewEmpty:"Add some dishes to see the message.",
-    waitNotice:"The restaurant will confirm the time on WhatsApp before preparing your order.", doneTitle:"Request sent", codeLabel:"Request number", stepSent:"Request sent", stepWait:"Waiting for confirmation", stepOk:"Confirmed", doneText:"The restaurant will check your request and confirm the time on WhatsApp. Please wait for confirmation before coming.", responseTime:"We usually reply within 15 minutes.", late:"No reply yet? Call the restaurant.", copy:"Copy summary", copied:"Copied ✓", close:"Close", barSend:"Send request", privacy:"Your details are sent only via WhatsApp to the restaurant and are not stored by this site.", specialL:"Have a dish in mind that is not on the menu?", specialPh:"Write it here", specialHint:"The restaurant will reply on WhatsApp with availability and price. The total here does not include this request.", excludedNote:"special request excluded",
+    waitNotice:"The restaurant will confirm the time on WhatsApp before preparing your order.", askTitle:"Did you enjoy it?", askText:"Leave a review on TripAdvisor: it really helps us!", askNo:"Not now", doneTitle:"Request sent", codeLabel:"Request number", stepSent:"Request sent", stepWait:"Waiting for confirmation", stepOk:"Confirmed", doneText:"Thank you, your request has been sent.", waitText:"The restaurant will check your request and confirm the time on WhatsApp. Please wait for confirmation before coming.", responseTime:"We usually reply within 15 minutes.", late:"No reply yet? Call the restaurant.", copy:"Copy summary", copied:"Copied ✓", close:"Close", barSend:"Send request", privacy:"Your details are sent only via WhatsApp to the restaurant and are not stored by this site.", specialL:"Have a dish in mind that is not on the menu?", specialPh:"Write it here", specialHint:"The restaurant will reply on WhatsApp with availability and price. The total here does not include this request.", excludedNote:"special request excluded",
     barEmpty:"Cart empty", barItems:(n)=> n===1 ? "1 item" : `${n} items`,
     missingPrefix:"To send the request, please complete: ", addDishFirst:"Add at least one dish to send the request.",
     completeFields:"Please complete all required fields (*).",
@@ -822,8 +847,17 @@ function showDone(code) {
   lateTimer = setTimeout(() => $("doneLate").classList.remove("hidden"), 15 * 60 * 1000);
 }
 function closeDone() {
+  const wasOpen = !$("done").classList.contains("hidden");
   $("done").classList.add("hidden");
   clearTimeout(lateTimer);
+  if (wasOpen) showAsk();
+}
+function showAsk() {
+  $("askLink").href = document.querySelector(".btn-trip").href;
+  $("askReview").classList.remove("hidden");
+}
+function closeAsk() {
+  $("askReview").classList.add("hidden");
 }
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeDone(); });
 function copySummary(btn) {
